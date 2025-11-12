@@ -9,10 +9,11 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]!);
-builder.Services.AddSignalR().AddAzureSignalR();
 builder.Services.AddDbContext<ChatDbContext>(options =>
     options.UseSqlServer(
         "Server=.;Database=MyDb;Trusted_Connection=True;",
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<ChatDbContext>(options =>
             errorNumbersToAdd: null
         )
     ));
+
 
 
 

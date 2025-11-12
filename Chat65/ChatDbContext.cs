@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Chat65.Models; // заміни на справжній namespace, де ChatMessage.cs
+﻿using Chat65.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Chat65.Data // заміни на namespace твого проекту
+namespace Chat65.Data
 {
     public class ChatDbContext : DbContext
     {
         public ChatDbContext(DbContextOptions<ChatDbContext> options) : base(options) { }
 
-        public DbSet<ChatMessage> Messages { get; set; }
+        public DbSet<Message> Messages { get; set; } = null!;
     }
 }
+
