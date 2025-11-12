@@ -4,6 +4,7 @@ using Chat65.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Azure.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]!);
 builder.Services.AddSignalR().AddAzureSignalR();
 builder.Services.AddDbContext<ChatDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ChatDb")));
+    options.UseSqlServer(
+        "Server=.;Database=MyDb;Trusted_Connection=True;",
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        )
+    ));
+
+
 
 var app = builder.Build();
 
@@ -24,8 +34,6 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

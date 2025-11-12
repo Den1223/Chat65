@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Chat65.Models; // заміни на справжній namespace, де ChatMessage.cs
 
 namespace Chat65.Data // заміни на namespace твого проекту
