@@ -2,9 +2,9 @@
 {
     public class Message
     {
-        public int Id { get; set; }           // Первичный ключ
-        public string User { get; set; } = ""; // Имя пользователя
-        public string Text { get; set; } = ""; // Текст сообщения
-        public DateTime Timestamp { get; set; } // Время отправки
+        public int Id { get; set; }
+        public string User { get; set; } = "";
+        public string Text { get; set; } = "";
+        public DateTime Timestamp { get; set; }
     }
 }
