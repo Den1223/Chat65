@@ -19,9 +19,7 @@ namespace Chat65.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     User = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SentimentScore = table.Column<double>(type: "float", nullable: true),
-                    SentimentLabel = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

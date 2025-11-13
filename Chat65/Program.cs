@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---- Выбираем подключение ----
-var useAzure = builder.Configuration.GetValue<bool>("UseAzure");
-var connectionString = useAzure
-    ? builder.Configuration.GetConnectionString("AzureSql")
-    : builder.Configuration.GetConnectionString("LocalDb");
+// ---- Примусове підключення до Azure SQL ----
+var useAzure = true; // <- змінено на true
+var connectionString = builder.Configuration.GetConnectionString("AzureSql");
 
 // ---- DbContext ----
 builder.Services.AddDbContext<ChatDbContext>(options =>
@@ -23,15 +21,8 @@ builder.Services.AddDbContext<ChatDbContext>(options =>
     ));
 
 // ---- SignalR ----
-if (useAzure)
-{
-    builder.Services.AddSignalR()
-           .AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
-}
-else
-{
-    builder.Services.AddSignalR();
-}
+builder.Services.AddSignalR()
+       .AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]);
 
 // ---- MVC ----
 builder.Services.AddControllersWithViews();

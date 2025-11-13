@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Чат";
+}
+
+<div class="card bg-secondary p-3 shadow">
+    <h2>Онлайн чат</h2>
+
+    <div class="mb-3">
+        <input id="userInput" class="form-control mb-2" placeholder="Ваше ім'я" />
+        <input id="messageInput" class="form-control mb-2" placeholder="Ваше повідомлення" />
+        <button id="sendButton" class="btn btn-light w-100">Відправити</button>
+    </div>
+
+    <ul id="messagesList" class="list-group"></ul>
+</div>
+
+@section Scripts {
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/ChatHub")
+            .build();
+
+        connection.on("ReceiveMessage", (user, message) => {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item", "bg-dark", "text-light");
+            li.textContent = `${user}: ${message}`;
+            document.getElementById("messagesList").appendChild(li);
+        });
+
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch(err => console.error("SignalR error: " + err));
+
+        document.getElementById("sendButton").addEventListener("click", () => {
+            const user = document.getElementById("userInput").value;
+            const message = document.getElementById("messageInput").value;
+
+            if (user && message) {
+                connection.invoke("SendMessage", user, message)
+                    .catch(err => console.error(err.toString()));
+                document.getElementById("messageInput").value = "";
+            }
+        });
+    </script>
+}

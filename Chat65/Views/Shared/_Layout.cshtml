@@ -2,39 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chat65</title>
+    <title>@ViewData["Title"] - Chat65</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 </head>
 <body>
-    <h1>Chat65</h1>
+    <header>
+        <h1>Chat65</h1>
+    </header>
 
-    <input id="userInput" placeholder="Имя пользователя" />
-    <input id="messageInput" placeholder="Сообщение" />
-    <button id="sendButton">Отправить</button>
+    <main>
+        @RenderBody()
+    </main>
 
-    <ul id="messagesList"></ul>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - Chat65</p>
+    </footer>
 
-    <script>
-        // Создаём подключение к хабу
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/ChatHub")
-            .build();
-
-        // Получаем сообщения от хаба
-        connection.on("ReceiveMessage", (user, message) => {
-            const li = document.createElement("li");
-            li.textContent = `${user}: ${message}`;
-            document.getElementById("messagesList").appendChild(li);
-        });
-
-        connection.start().catch(err => console.error(err.toString()));
-
-        // Отправка сообщения
-        document.getElementById("sendButton").addEventListener("click", () => {
-            const user = document.getElementById("userInput").value;
-            const message = document.getElementById("messageInput").value;
-            connection.invoke("SendMessage", user, message).catch(err => console.error(err.toString()));
-        });
-    </script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
+

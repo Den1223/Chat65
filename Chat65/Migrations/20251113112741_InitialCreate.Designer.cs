@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat65.Migrations
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20251112124847_InitialCreate")]
+    [Migration("20251113112741_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Chat65.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Chat65.Models.ChatMessage", b =>
+            modelBuilder.Entity("Chat65.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,18 +33,12 @@ namespace Chat65.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SentimentLabel")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("SentimentScore")
-                        .HasColumnType("float");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("User")
                         .IsRequired()
