@@ -1,0 +1,5 @@
+{
+    "dataworkspace.excludedProjects": [
+        "NewChat65/NewChat65.sqlproj"
+    ]
+}
