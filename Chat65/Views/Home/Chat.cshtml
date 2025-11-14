@@ -2,7 +2,9 @@
     ViewData["Title"] = "Чат";
 }
 
-<link rel="stylesheet" href="~/css/chat.css" />
+<link rel="stylesheet" href="~/css/chat.css?v=@DateTime.Now.Ticks" />
+<script src="~/js/chat.js?v=@DateTime.Now.Ticks"></script>
+
 
 <div class="chat-container">
     <div class="sidebar">
