@@ -23,7 +23,6 @@ connection.on("ReceiveMessage", (user, message) => {
     messagesList.scrollTop = messagesList.scrollHeight; // прокрутка вниз
 });
 
-// Оновлення списку онлайн користувачів
 connection.on("UpdateUserList", (users) => {
     userList.innerHTML = "";
     users.forEach(user => {
@@ -34,26 +33,15 @@ connection.on("UpdateUserList", (users) => {
     });
 });
 
+
 connection.start()
     .then(() => console.log("SignalR connected"))
     .catch(err => console.error("SignalR error: " + err));
 
-document.getElementById("sendButton").addEventListener("click", () => {
+document.getElementById("userInput").addEventListener("change", () => {
     const user = document.getElementById("userInput").value.trim();
-    const message = document.getElementById("messageInput").value.trim();
-
-    if (!user) {
-        alert("Введіть ім'я!");
-        return;
-    }
-
-    if (message) {
-        connection.invoke("SendMessage", user, message)
+    if (user) {
+        connection.invoke("JoinChat", user)
             .catch(err => console.error(err.toString()));
-        document.getElementById("messageInput").value = "";
     }
-
-    
-    connection.invoke("JoinChat", user)
-        .catch(err => console.error(err.toString()));
 });
