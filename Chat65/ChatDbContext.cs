@@ -12,7 +12,7 @@ namespace Chat65.Data
 
         public DbSet<Message> Messages { get; set; }
 
-        // Додати таблицю для користувачів
+        
         public DbSet<ChatUser> ChatUsers { get; set; }
     }
 }
