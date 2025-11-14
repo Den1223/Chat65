@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>@ViewData["Title"] - Chat65</title>
+
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    
+    <link rel="stylesheet" href="~/css/chat1.css?v=2">
+
 </head>
 <body>
     <header>
@@ -18,7 +24,8 @@
         <p>&copy; @DateTime.Now.Year - Chat65</p>
     </footer>
 
+    <script src="~/js/chat1.js?v=2"></script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>
-
