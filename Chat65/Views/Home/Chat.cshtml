@@ -2,15 +2,12 @@
     ViewData["Title"] = "Чат";
 }
 
-<link rel="stylesheet" href="~/css/chat1.css" />
-<script src="~/js/chat1.js"></script>
-
-
 <div class="chat-container">
     <div class="sidebar">
         <h5>Онлайн користувачі</h5>
         <ul id="userList" class="list-group"></ul>
     </div>
+
     <div class="chat-window">
         <ul id="messagesList"></ul>
 
@@ -21,5 +18,63 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/chat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/ChatHub")
+            .build();
+
+        const messagesList = document.getElementById("messagesList");
+        const userList = document.getElementById("userList");
+        let currentUser = "";
+
+        // Отримання повідомлень
+        connection.on("ReceiveMessage", (user, message) => {
+            const li = document.createElement("li");
+            li.classList.add("message");
+            li.textContent = message;
+
+            if(user === currentUser) li.classList.add("user");
+            else li.classList.add("other");
+
+            messagesList.appendChild(li);
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
+
+        // Оновлення списку онлайн користувачів
+        connection.on("UpdateUserList", (users) => {
+            userList.innerHTML = "";
+            users.forEach(user => {
+                const li = document.createElement("li");
+                li.classList.add("list-group-item");
+                li.textContent = user;
+                userList.appendChild(li);
+            });
+        });
+
+        // Підключення
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch(err => console.error("SignalR error: " + err));
+
+        document.getElementById("userInput").addEventListener("blur", () => {
+            const user = document.getElementById("userInput").value.trim();
+            if(user && user !== currentUser) {
+                currentUser = user;
+                connection.invoke("JoinChat", user)
+                    .then(() => console.log("JoinChat викликано для", user))
+                    .catch(err => console.error(err.toString()));
+            }
+        });
+
+        document.getElementById("sendButton").addEventListener("click", () => {
+            const message = document.getElementById("messageInput").value.trim();
+            if(!currentUser) { alert("Введіть ім'я!"); return; }
+            if(message) {
+                connection.invoke("SendMessage", currentUser, message)
+                    .catch(err => console.error(err.toString()));
+                document.getElementById("messageInput").value = "";
+            }
+        });
+    </script>
 }
