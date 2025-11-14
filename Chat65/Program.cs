@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---- Примусове підключення до Azure SQL ----
-var useAzure = true; // <- змінено на true
+
+var useAzure = true; 
 var connectionString = builder.Configuration.GetConnectionString("AzureSql");
 
 // ---- DbContext ----
