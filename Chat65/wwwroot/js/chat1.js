@@ -1,19 +1,17 @@
-﻿
-const connection = new signalR.HubConnectionBuilder()
+﻿const connection = new signalR.HubConnectionBuilder()
     .withUrl("/ChatHub")
     .build();
 
 const messagesList = document.getElementById("messagesList");
 const userList = document.getElementById("userList");
 
+let currentUser = "";
 
+// --- Отримання повідомлень ---
 connection.on("ReceiveMessage", (user, message) => {
-    const container = document.getElementById("messagesList");
-
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message");
 
-    const currentUser = document.getElementById("userInput").value;
     if (user === currentUser) {
         msgDiv.classList.add("user");
     } else {
@@ -22,11 +20,11 @@ connection.on("ReceiveMessage", (user, message) => {
 
     msgDiv.innerHTML = `<strong>${user}:</strong> ${message}`;
 
-    container.appendChild(msgDiv);
-    container.scrollTop = container.scrollHeight;
+    messagesList.appendChild(msgDiv);
+    messagesList.scrollTop = messagesList.scrollHeight;
 });
 
-
+// --- Оновлення списку користувачів ---
 connection.on("UpdateUserList", (users) => {
     userList.innerHTML = "";
     users.forEach(user => {
@@ -37,15 +35,37 @@ connection.on("UpdateUserList", (users) => {
     });
 });
 
-
+// --- Підключення ---
 connection.start()
     .then(() => console.log("SignalR connected"))
     .catch(err => console.error("SignalR error: " + err));
 
+// --- Введення імені ---
 document.getElementById("userInput").addEventListener("change", () => {
     const user = document.getElementById("userInput").value.trim();
-    if (user) {
+    if (user && user !== currentUser) {
+
+        currentUser = user;
+
         connection.invoke("JoinChat", user)
+            .then(() => console.log("JoinChat OK:", user))
             .catch(err => console.error(err.toString()));
+    }
+});
+
+// --- Надсилання повідомлення ---
+document.getElementById("sendButton").addEventListener("click", () => {
+    const message = document.getElementById("messageInput").value.trim();
+
+    if (!currentUser) {
+        alert("Введіть ім'я!");
+        return;
+    }
+
+    if (message.length > 0) {
+        connection.invoke("SendMessage", currentUser, message)
+            .catch(err => console.error(err.toString()));
+
+        document.getElementById("messageInput").value = "";
     }
 });
