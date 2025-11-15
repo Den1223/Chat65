@@ -7,6 +7,8 @@ namespace Chat65.Models
         public string User { get; set; }
         public string Text { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; }
+
     }
 }
 

@@ -6,22 +6,26 @@ const connection = new signalR.HubConnectionBuilder()
 const messagesList = document.getElementById("messagesList");
 const userList = document.getElementById("userList");
 
-// Отримання повідомлень
+
 connection.on("ReceiveMessage", (user, message) => {
-    const li = document.createElement("li");
-    li.classList.add("message");
-    li.textContent = message;
+    const container = document.getElementById("messagesList");
+
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message");
 
     const currentUser = document.getElementById("userInput").value;
     if (user === currentUser) {
-        li.classList.add("user");
+        msgDiv.classList.add("user");
     } else {
-        li.classList.add("other");
+        msgDiv.classList.add("other");
     }
 
-    messagesList.appendChild(li);
-    messagesList.scrollTop = messagesList.scrollHeight; // прокрутка вниз
+    msgDiv.innerHTML = `<strong>${user}:</strong> ${message}`;
+
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
 });
+
 
 connection.on("UpdateUserList", (users) => {
     userList.innerHTML = "";
