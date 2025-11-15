@@ -17,50 +17,33 @@ namespace Chat65.Hubs
         
         public async Task JoinChat(string username)
         {
-            var user = await _context.ChatUsers
-                .FirstOrDefaultAsync(u => u.ConnectionId == Context.ConnectionId);
+            var connectionId = Context.ConnectionId;
 
-            if (user == null)
+            var existing = await _context.ChatUsers
+                .FirstOrDefaultAsync(u => u.ConnectionId == connectionId);
+
+            if (existing == null)
             {
                 _context.ChatUsers.Add(new ChatUser
                 {
                     Username = username,
-                    ConnectionId = Context.ConnectionId,
+                    ConnectionId = connectionId,
                     IsOnline = true
                 });
             }
             else
             {
-                user.Username = username;
-                user.IsOnline = true;
+                existing.Username = username;
+                existing.IsOnline = true;
             }
 
             await _context.SaveChangesAsync();
 
             
-            await LoadHistory();
+            await UpdateUserList();
 
             
-            await UpdateUserList();
-        }
-
-       
-        public async Task LoadHistory()
-        {
-            DateTime since = DateTime.Now.AddDays(-1);
-
-            var messages = await _context.Messages
-                .Where(m => m.Timestamp >= since)
-                .OrderBy(m => m.Timestamp)
-                .Select(m => new
-                {
-                    user = m.User,
-                    text = m.Text,
-                    timestamp = m.Timestamp
-                })
-                .ToListAsync();
-
-            await Clients.Caller.SendAsync("LoadHistory", messages);
+            await LoadRecentMessages();
         }
 
         
@@ -70,32 +53,40 @@ namespace Chat65.Hubs
             {
                 User = user,
                 Text = message,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             };
 
             _context.Messages.Add(msg);
             await _context.SaveChangesAsync();
 
-            
             await Clients.All.SendAsync("ReceiveMessage", user, message);
-
-            
-            await CleanupOldMessages();
         }
 
-        private async Task CleanupOldMessages()
+        
+        public async Task LoadRecentMessages()
         {
-            DateTime limit = DateTime.Now.AddDays(-1);
+            DateTime since = DateTime.UtcNow.AddDays(-1);
 
-            var oldMessages = _context.Messages
-                .Where(m => m.Timestamp < limit);
+            var messages = await _context.Messages
+                .Where(m => m.Timestamp >= since)
+                .OrderBy(m => m.Timestamp)
+                .ToListAsync();
 
-            _context.Messages.RemoveRange(oldMessages);
-            await _context.SaveChangesAsync();
+            await Clients.Caller.SendAsync("LoadMessages", messages);
         }
 
+        
+        private async Task UpdateUserList()
+        {
+            var users = await _context.ChatUsers
+                .Where(u => u.IsOnline)
+                .Select(u => u.Username)
+                .ToListAsync();
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+            await Clients.All.SendAsync("UpdateUserList", users);
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
             var user = await _context.ChatUsers
                 .FirstOrDefaultAsync(u => u.ConnectionId == Context.ConnectionId);
@@ -108,17 +99,6 @@ namespace Chat65.Hubs
             }
 
             await base.OnDisconnectedAsync(exception);
-        }
-
-
-        private async Task UpdateUserList()
-        {
-            var users = await _context.ChatUsers
-                                      .Where(u => u.IsOnline)
-                                      .Select(u => u.Username)
-                                      .ToListAsync();
-
-            await Clients.All.SendAsync("UpdateUserList", users);
         }
     }
 }

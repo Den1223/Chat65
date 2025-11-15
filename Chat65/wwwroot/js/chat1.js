@@ -33,6 +33,7 @@ connection.on("LoadMessages", (messages) => {
 });
 
 
+
 connection.start()
     .then(() => console.log("SignalR connected"))
     .catch(err => console.error("SignalR error:", err));
@@ -68,7 +69,7 @@ function sendMessage() {
         return;
     }
 
-    if (message.length === 0) return;
+    if (!message) return;
 
     connection.invoke("SendMessage", currentUser, message)
         .catch(err => console.error("SendMessage error:", err));
