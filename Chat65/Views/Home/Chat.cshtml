@@ -3,13 +3,13 @@
 }
 
 <div class="chat-container d-flex">
-    <!-- Ліва панель -->
+    
     <div class="sidebar p-3">
         <h5>Онлайн користувачі</h5>
         <ul id="userList" class="list-group"></ul>
     </div>
 
-    <!-- Основне вікно -->
+    
     <div class="chat-window p-3 flex-grow-1 d-flex flex-column">
 
         <ul id="messagesList" class="chat-messages flex-grow-1"></ul>
@@ -32,17 +32,13 @@
         const userList = document.getElementById("userList");
         let currentUser = "";
 
-        // ============================
-        // 1. Отримання історії чату
-        // ============================
+        
         connection.on("LoadHistory", (messages) => {
             messagesList.innerHTML = "";
             messages.forEach(m => addMessage(m.user, m.text));
         });
 
-        // ============================
-        // 2. Нове повідомлення
-        // ============================
+        
         connection.on("ReceiveMessage", (user, message) => {
             addMessage(user, message);
         });
@@ -63,9 +59,7 @@
             messagesList.scrollTop = messagesList.scrollHeight;
         }
 
-        // ============================
-        // 3. Список користувачів
-        // ============================
+        
         connection.on("UpdateUserList", (users) => {
             userList.innerHTML = "";
             users.forEach(user => {
@@ -76,16 +70,12 @@
             });
         });
 
-        // ============================
-        // 4. Підключення до хабу
-        // ============================
+        
         connection.start()
             .then(() => console.log("SignalR connected"))
             .catch(err => console.error("SignalR error: " + err));
 
-        // ============================
-        // 5. Введення імені
-        // ============================
+
         document.getElementById("userInput").addEventListener("blur", () => {
             const user = document.getElementById("userInput").value.trim();
             if (user && user !== currentUser) {
@@ -96,9 +86,7 @@
             }
         });
 
-        // ============================
-        // 6. Надсилання повідомлень
-        // ============================
+       
         document.getElementById("sendButton").addEventListener("click", () => {
             const message = document.getElementById("messageInput").value.trim();
             if (!currentUser) { alert("Введіть ім'я!"); return; }

@@ -21,10 +21,10 @@ namespace Chat65.Services
         public static List<ChatMessage> GetLastMessages()
         {
             CleanupOld();
-            return _messages.ToList(); // копія
+            return _messages.ToList();
         }
 
-        // Видаляє повідомлення старші 24 годин
+        // delete sms for 24 hour
         private static void CleanupOld()
         {
             DateTime limit = DateTime.UtcNow.AddDays(-1);
